@@ -1,0 +1,27 @@
+
+<html>
+<head>
+	<title>Crime Map</title>
+</head>
+<body>
+
+	<h4>Add description into the crimes database</h4>
+	
+	<form action="/add" method="POST">
+		<input type="text" name="user_input">
+		<input type="submit" name="Submit">	
+	</form>
+
+	<p>
+		<a href="/clear">Delete all the data in the crimes table!</a>
+	</p>
+	
+	<h4>Description column of the crimesdatabase</h4>
+
+	{% for i in range(number_data) %}
+		<p>{{i + 1}}. {{data[i]}}</p>
+	{% endfor %}
+
+	
+</body>
+</html>

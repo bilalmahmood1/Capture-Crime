@@ -32,7 +32,9 @@ try:
         cursor.execute(sql)
     
     connection.commit()
-    
+
+except Exception as e:
+    print(e) 
 finally:
     connection.close()
         
