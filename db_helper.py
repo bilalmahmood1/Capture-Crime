@@ -6,7 +6,6 @@ Created on Mon Jun 11 05:48:06 2018
 @author: bilal
 """
 
-
 import pymysql
 from db_config import username, password
 import datetime
@@ -24,18 +23,14 @@ class DBHelper:
         
         return connection
     
-    
-    
     def add_issue(self, category, date, latitude, longitude, description):
         """Add the data user entered into the DB"""
         connection = self.connect()
         try:
-            
             query = "INSERT INTO crimes (category, date, latitude, longitude, description) VALUES (%s,%s,%s,%s,%s);"
             with connection.cursor() as cursor:
                 cursor.execute(query, (category, date, latitude, longitude, description))     
             connection.commit()
-            
         except Exception as e:
             print(e)
         
@@ -43,6 +38,25 @@ class DBHelper:
             connection.close()
 
 	
+    def count_issues(self):
+        """Returns total number of issues registered so far"""
+        
+        connection = self.connect()
+        total_count = None
+        try:
+            
+            query = "SELECT COUNT(*) FROM crimes;"
+            with connection.cursor() as cursor:
+                cursor.execute(query)     
+                total_count = cursor.fetchone()[0]
+                    
+            return total_count
+        except Exception as e:
+            print(e)
+            return total_count
+        finally:
+            connection.close()
+
     
     def get_all_issues(self):
         """Fetches the issues from the crimes table"""
@@ -78,7 +92,6 @@ class DBHelper:
             with connection.cursor() as cursor:
                 cursor.execute(query)
             connection.commit()
-                
                 
         except Exception as e:
             print(e)
