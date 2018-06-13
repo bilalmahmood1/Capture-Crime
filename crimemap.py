@@ -10,7 +10,7 @@ from flask import render_template
 from flask import request
 import json
 import requests
-from API_KEYS import IPINFO_KEY
+from API_KEYS import IPINFO_KEY,MAPS_KEY
 
 test = False
 
@@ -44,6 +44,7 @@ def home():
         print(e)
         data = None
     return render_template("home.html",
+                           MAPS_KEY = MAPS_KEY,
                            lat = address[0],
                            long =  address[1],
                            data = data,
