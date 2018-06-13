@@ -9,6 +9,8 @@ Created on Mon Jun 11 05:48:06 2018
 
 import pymysql
 from db_config import username, password
+import datetime
+
 
 class DBHelper:
     def connect(self, database = "crimemap"):        
@@ -23,14 +25,42 @@ class DBHelper:
         return connection
     
     
-    def get_all_inputs(self):
-        """Fetches the description column from the crimes table"""
+    
+    def add_issue(self, category, date, latitude, longitude, description):
+        """Add the data user entered into the DB"""
         connection = self.connect()
         try:
-            query = "SELECT description FROM crimes;"
+            
+            query = "INSERT INTO crimes (category, date, latitude, longitude, description) VALUES (%s,%s,%s,%s,%s);"
+            with connection.cursor() as cursor:
+                cursor.execute(query, (category, date, latitude, longitude, description))     
+            connection.commit()
+            
+        except Exception as e:
+            print(e)
+        
+        finally:
+            connection.close()
+
+	
+    
+    def get_all_issues(self):
+        """Fetches the issues from the crimes table"""
+        connection = self.connect()
+        try:
+            query = "SELECT latitude, longitude, date, category, description FROM crimes;"
+            data = []
             with connection.cursor() as cursor:
                 cursor.execute(query)
-                data = cursor.fetchall()
+                for issue in cursor:
+                    named_issue = {
+                        'latitude': issue[0],
+                        'longitude': issue[1],
+                        'date': datetime.datetime.strftime(issue[2], '%Y-%m-%d'),
+                        'category': issue[3],
+                        'description': issue[4]
+                    }
+                    data.append(named_issue)
             return data
             
         except Exception as e:
@@ -39,24 +69,6 @@ class DBHelper:
         finally:
             connection.close()
             
-        
-    def add_input(self, data):
-        """Insert data into the description column of the crimes table"""
-        connection = self.connect()
-        try:
-            query = "INSERT INTO crimes (description) VALUES (%s);"
-            with connection.cursor() as cursor:
-                cursor.execute(query, data)
-             
-            connection.commit()
-                
-                
-        except Exception as e:
-            print(e)
-   
-        finally:
-            connection.close()
-     
         
     def clear_all(self):
         """Delete the crimes table"""

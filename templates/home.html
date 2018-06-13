@@ -1,27 +1,86 @@
-
+<!DOCTYPE html>
 <html>
-<head>
-	<title>Crime Map</title>
-</head>
-<body>
+	<head>
+		<title>Community Problems</title>
+		<link type="text/css" rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}"/>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+		<script type="text/javascript">
+			var map;
+			var marker;
+			function initialize() {
+				
+				var mapOptions = {
+				center: new google.maps.LatLng({{lat}}, {{long}}),
+				zoom: 15
+				};
+				map = new
+				google.maps.Map(document.getElementById("map-canvas"),mapOptions);
+				google.maps.event.addListener(map, 'click',
+				function(event){
+					placeMarker(event.latLng);
+				});
+				
+				function placeMarker(location) {
+					if(marker){
+						marker.setPosition(location);
+					} else{
+					marker = new google.maps.Marker({
+						position: location,
+						map: map,
+						title: 'Crime spot!',
+					});
 
-	<h4>Add description into the crimes database</h4>
-	
-	<form action="/add" method="POST">
-		<input type="text" name="user_input">
-		<input type="submit" name="Submit">	
-	</form>
+					}
+					document.getElementById('latitude').value = location.lat();
+					document.getElementById('longitude').value = location.lng();	
+				}
 
-	<p>
-		<a href="/clear">Delete all the data in the crimes table!</a>
-	</p>
-	
-	<h4>Description column of the crimesdatabase</h4>
+				function placeCrimes(crimes) {
+						for (i=0; i<crimes.length; i++) {
+							crime = new google.maps.Marker( {
+							position: new google.maps.LatLng(crimes[i].latitude, crimes[i].
+							longitude),
+							map: map,
+							title: crimes[i].date + "\n" + crimes[i].category + "\n" + crimes[i].description
+							});
+						}
+						}
+				placeCrimes({{data | safe}});
 
-	{% for i in range(number_data) %}
-		<p>{{i + 1}}. {{data[i]}}</p>
-	{% endfor %}
-
-	
-</body>
+	}
+		</script>
+	</head>
+	<body onload="initialize()">
+		<h1>Highlight Problems Around you!</h1>
+		<p>Tell us about the problems in your neighborhood, crimes, injustuce, poor administration, corruption so that people we select can fix those issues. The goal of this website is to collect observations from the public about the problems they see around them
+		and communicate them to a government to work on. Since the idea is to gather local neighborhood concerns as a first step
+	towards improving the communities and move the governence to a more data-savy direction</p>
+		<div id="input_collection_block">
+			<div id="map-canvas"></div>
+			<div id="community_issues">
+				<h3>Submit your observations</h3>
+				<form action="/submit_issue" method="POST">
+					<label for="Category">Category</label>
+					<select name="category" id="category">
+						
+						<option value="Corruption">Corruption</option>
+						<option value="Injustice">Injustice</option>
+						<option value="Traffic">Traffic</option>
+						<option value="Theft">Theft</option>
+						<option value="Deception">Deception</option>
+						
+					</select>
+					<label for="date">Date</label>
+					<input name="date" id="date" type="date">
+					<label for="latitude">Latitude</label>
+					<input name="latitude" id="latitude" type="text">
+					<label for="longitude">Longitude</label>
+					<input name="longitude" id="longitude" type="text">
+					<label for="description">Description</label>
+					<textarea name="description" id="description" placeholder="A briefly description problems around you!"></textarea>
+					<input type="submit" value="Submit">
+				</form>
+			</div>
+		</div>
+	</body>
 </html>
