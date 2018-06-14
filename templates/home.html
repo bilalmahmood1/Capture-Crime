@@ -52,18 +52,24 @@
 		</script>
 	</head>
 	<body onload="initialize()">
-		<h1>Highlight Problems Around you!</h1>
+	<div id="title_instructions">
+	<h1 >Highlight Problems Around You</h1>
 		<p>The goal of this website is to allow citizens to register their concerns and the relevant government bodies to take action.  It is high time that the government should rely on data to get its priorities straight and a platform for the public to raise their voices!</p>
-	
-	<label for="count">Number of issues submitted so far: </label> 
-	<output name="count"><div id="issue_count">{{count}}</div></output>
+	</div>
+	<div id="score">
+		<div id="label_count">
+			<div id="label_count"><h3>Number of issues submitted so far: </h3> </div>  
+		</div>
+		<div id="issue_count"><b>{{count}}</b></div>
+	</div>
 
-
-	<output></output>
 		<div id="input_collection_block">
 			<div id="map-canvas"></div>
 			<div id="community_issues">
 				<h3>Submit your observations</h3>
+				{% if error_message %}
+					<div id="error"><p>{{error_message}}</p></div>
+				{% endif %}
 				<form action="/submit_issue" method="POST">
 					<label for="Category">Category</label>
 					<select name="category" id="category">
@@ -74,11 +80,11 @@
 					<label for="date">Date</label>
 					<input name="date" id="date" type="date">
 					<label for="latitude">Latitude</label>
-					<input name="latitude" id="latitude" type="text">
+					<input name="latitude" id="latitude" type="text" readonly>
 					<label for="longitude">Longitude</label>
-					<input name="longitude" id="longitude" type="text">
+					<input name="longitude" id="longitude" type="text" readonly>
 					<label for="description">Description</label>
-					<textarea name="description" id="description" placeholder="A briefly description problems around you!"></textarea>
+					<textarea name="description" id="description" placeholder="A briefly describe problems around you!"></textarea>
 					<input type="submit" value="Submit">
 				</form>
 			</div>

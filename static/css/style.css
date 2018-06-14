@@ -3,51 +3,66 @@ body {
 	background: #eee;
 }
 
-#map-canvas {
-width: 70%;
-height: 500px;
-float: left;
-}
-
 input, select, textarea {
-display: block;
-color: grey;
-border: 1px solid lightsteelblue;
-line-height: 15px;
-margin: 2px 6px 16px 0px;
-width: 100%;
+	display: block;
+	color: grey;
+	border: 1px solid lightsteelblue;
+	line-height: 15px;
+	margin: 2px 6px 16px 0px;
+	width: 100%;
 }
 
 textarea{
 	height: 100px;
 }
 input[type="submit"] {
-padding: 5px 10px 5px 10px;
-color: black;
-background: lightsteelblue;
-border: none;
-box-shadow: 1px 1px 1px #4C6E91;
+	padding: 5px 10px 5px 10px;
+	color: black;
+	background: lightsteelblue;
+	border: none;
+	box-shadow: 1px 1px 1px #4C6E91;
 }
 
-#issue_count{
-	font-size: 50px;
-	
+
+#title_instructions{
+	text-align: center;
+	width: 100%;
 }
+
+#score{
+	width: 100%;
+	float:right;
+	text-align: center;
+}
+
+#issue_count{	
+	width: 100%;
+	font-size: 60px;
+	padding-bottom: 40px;
+}
+
 
 input[type="submit"]:hover {
-background: steelblue;
+	background: steelblue;
 }
 
 #map-canvas {
-display: block;
-
-width: 70%;
-height: 500px;
-float: left;
+	display: block;
+	width: 70%;
+	height: 600px;
+	float: left;
+	padding-left: 1%;
+	padding-right: 1%;
 }
 
 #community_issues {
-float: right;
-width: 25%;
-padding: 0px 2.5% 0px 0px;
+	float: right;
+	width: 25%;
+	padding-left: 1%;
+	padding-right: 1%;
+
+}
+
+#error {
+	color: red;
 }

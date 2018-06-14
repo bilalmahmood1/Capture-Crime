@@ -10,6 +10,9 @@ from flask import render_template
 from flask import request
 import json
 import requests
+import bleach
+import dateparser
+import datetime
 from API_KEYS import IPINFO_KEY,MAPS_KEY_1,MAPS_KEY_2,MAPS_KEY_3
 
 test = False
@@ -29,14 +32,9 @@ app = Flask(__name__)
 DB = DBHelper()
 
 @app.route("/")
-def home():
-    
+def home(messages = None):
     try:
         address = get_approx_address()
-    except Exception as e:
-        print(e)
-        address = DEFAULT_ADDRESS
-    try:
         data = DB.get_all_issues()
         data = json.dumps(data)
         count = DB.count_issues()
@@ -49,24 +47,45 @@ def home():
                            long =  address[1],
                            data = data,
                            count = count,
-                           categories = CATEGORIES
+                           categories = CATEGORIES,
+                           error_message = messages
                            )
 
 @app.route("/submit_issue", methods = ["POST"])
 def add_issue():
-    try:
         
-        category = request.form.get("category")
-        date = request.form.get("date")
-        latitude = request.form.get("latitude")
-        longitude = request.form.get("longitude")
-        description = request.form.get("description")
-        DB.add_issue(category, date, latitude, longitude, description)
+    ## Validating category
+    category = request.form.get("category")
+    if category not in CATEGORIES:
+        messages = "Please select from the category."
+        return home(messages)
+    
 
+    user_date = request.form.get("date")
+    date = validate_date(user_date)
+    
+    if date == None:
+        messages = "Please enter correct date (year/month/day). "
+        return home(messages)
+    
+                                    
+    try:
+        latitude = float(request.form.get("latitude"))
+        longitude = float(request.form.get("longitude"))
+    except ValueError:
+        messages = "Please enter location by clicking on the map."
+        return home(messages)
+        
+    
+    ## Sanitizing the description
+    description = sanitize_text(request.form.get("description"))
+
+    try:    
+        DB.add_issue(category, date, latitude, longitude, description)
     except Exception as e:
         print(e)
 
-    return redirect(url_for('home'))
+    return home()
 
 @app.route("/clear")
 def clear():
@@ -74,10 +93,20 @@ def clear():
         DB.clear_all()
     except Exception as e:
         print(e)
-    return redirect(url_for('home'))
+    return home()
 
 
-
+def validate_date(user_date):
+    """validate user entered date"""
+    date = dateparser.parse(user_date)
+    try:
+        return datetime.datetime.strftime(date, "%Y-%m-%d")
+    except TypeError:
+        return None
+     
+def sanitize_text(text):
+    """Sanitize free text to prevent against XSS attacks"""
+    return bleach.clean(text)
 
 def get_approx_address():
     """Access latitude and longitude information using the client's IP"""
@@ -101,8 +130,7 @@ def get_lat_long(ip):
         response = requests.get(URL.format(ip,IPINFO_KEY))
         location = [float(i) for i in response.json()['loc'].split(",")]
         latitude = location[0]
-        longitude = location[1]
-        
+        longitude = location[1]   
     except Exception as e:
         print(e)
         latitude, longitude = DEFAULT_ADDRESS
